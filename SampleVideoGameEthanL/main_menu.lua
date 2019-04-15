@@ -97,7 +97,7 @@ function scene:create( event )
         {   
             -- Set its position on the screen relative to the screen size
             x = display.contentWidth/2,
-            y = display.contentHeight*7/8,
+            y = display.contentHeight*6/8,
 
             -- Insert the images here
             defaultFile = "Images/Start Button Unpressed.png",
