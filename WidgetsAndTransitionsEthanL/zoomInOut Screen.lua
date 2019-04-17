@@ -1,46 +1,40 @@
 -----------------------------------------------------------------------------------------
 --
--- credits_screen.lua
--- Created by: Your Name
--- Special thanks to Wal Wal for helping in the design of this framework.
--- Date: Month Day, Year
--- Description: This is the credits page, displaying a back button to the main menu.
+-- zoomInOut Screen.lua
+-- Transitions Examples
+-- Created by Wal Wal
+-- Started November 14
+--
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 -- INITIALIZATIONS
 -----------------------------------------------------------------------------------------
 
--- Use Composer Libraries
+-- Calling Composer Library
 local composer = require( "composer" )
+
+-----------------------------------------------------------------------------------------
+
+-- Calling Widget Library
 local widget = require( "widget" )
 
 -----------------------------------------------------------------------------------------
 
 -- Naming Scene
-sceneName = "credits_screen"
+sceneName = "zoomInOut Screen"
+
+-----------------------------------------------------------------------------------------
 
 -- Creating Scene Object
-scene = composer.newScene( sceneName ) -- This function doesn't accept a string, only a variable containing a string
+local scene = composer.newScene( sceneName )
 
 -----------------------------------------------------------------------------------------
--- LOCAL VARIABLES
------------------------------------------------------------------------------------------
-local bkg_image
-local backButton
-
------------------------------------------------------------------------------------------
--- LOCAL FUNCTIONS
+-- FORWARD REFERENCES
 -----------------------------------------------------------------------------------------
 
--- Creating Transitioning Function back to main menu
-local function BackTransition( )
-    composer.gotoScene( "main_menu", {effect = "slideDown", time = 500})
-end
+local bkg
 
-
------------------------------------------------------------------------------------------
--- GLOBAL SCENE FUNCTIONS
 -----------------------------------------------------------------------------------------
 
 -- The function called when the screen doesn't exist
@@ -50,52 +44,30 @@ function scene:create( event )
     local sceneGroup = self.view
 
     -----------------------------------------------------------------------------------------
-    -- BACKGROUND AND DISPLAY OBJECTS
-    -----------------------------------------------------------------------------------------
 
-    -- Insert the background image and set it to the center of the screen
-    bkg_image = display.newImageRect("Images/Credits Screen.png", display.contentWidth, display.contentHeight)
-    bkg_image.x = display.contentCenterX
-    bkg_image.y = display.contentCenterY
-    bkg_image.width = display.contentWidth
-    bkg_image.height = display.contentHeight
+    -- Creating the background
+    bkg = display.newRect( 0, 0, 0, 0 ) -- They're set to 0 so they can be clearly set below
 
-    -- Associating display objects with this scene 
-    sceneGroup:insert( bkg_image )
+        -- Setting position
+        bkg.x = display.contentCenterX
+        bkg.y = display.contentCenterY 
 
-    -- Send the background image to the back layer so all other objects can be on top
-    bkg_image:toBack()
+        -- Setting dimensions
+        bkg.width = display.contentWidth
+        bkg.height = display.contentHeight
 
-    -----------------------------------------------------------------------------------------
-    -- BUTTON WIDGETS
-    -----------------------------------------------------------------------------------------
+        -- Setting color
+        bkg:setFillColor(  1, 1, 0.2 )
 
-    -- Creating Back Button
-    backButton = widget.newButton( 
-    {
-        -- Setting Position
-        x = display.contentWidth*1/8,
-        y = display.contentHeight*15/16,
-
-        -- Setting Dimensions
-        -- width = 1000,
-        -- height = 106,
-
-        -- Setting Visual Properties
-        defaultFile = "Images/Back Button Unpressed.png",
-        overFile = "Images/Back Button Pressed.png",
-
-        -- Setting Functional Properties
-        onRelease = BackTransition
-
-    } )
+        -- Sending to Back Layer
+        bkg:toBack( )
 
     -----------------------------------------------------------------------------------------
 
-    -- Associating Buttons with this scene
-    sceneGroup:insert( backButton )
-    
-end --function scene:create( event )
+    -- Inserting objects into the scene group in order to ONLY be associated with this scene
+    sceneGroup:insert( bkg )
+
+    end
 
 -----------------------------------------------------------------------------------------
 
@@ -112,17 +84,61 @@ function scene:show( event )
     -----------------------------------------------------------------------------------------
 
     if ( phase == "will" ) then
-        -- Called when the scene is still off screen (but is about to come on screen).
+       
+        -- Pre-Setting Transition Options
+        local transitionOptions = (
+            {
+                effect = "zoomInOut",
+                time = 1000
+            })
+
+        -- Creating Transition function
+        function Transition( )
+            composer.gotoScene( "main_menu", transitionOptions )
+        end
 
     -----------------------------------------------------------------------------------------
 
+        -- Creating "Back" button
+        local mainMenuButton = widget.newButton(
+            {
+                -- Setting Position
+                x = display.contentCenterX,
+                y = display.contentCenterY,
+
+                -- Creating button shape
+                shape = "roundedRect",
+                width = display.contentWidth / 2,
+                height = 100,
+                cornerRadius = 50,
+                strokeWidth = 20,
+
+                -- Changing button colors (Default = not clicked, over = clicked)
+                fillColor = { default = { 0.004, 0.537, 1 }, over = { 1, 0.604, 0.004 } },
+                strokeColor = { default = { 0.75, 0, 0 }, over = { 0.5, 0, 0 } },
+                
+                -- Creating text on button
+                label = "Main Menu",
+                labelColor = { default = { 0, 0, 0 }, over = { 0, 0, 0 } },
+                font = Arial,
+                fontSize = 60,
+                
+                -- Button Functions
+                onRelease = Transition
+            } )
+
+    -----------------------------------------------------------------------------------------
+
+    -- Inserting objects into the scene group in order to ONLY be associated with this scene
+    sceneGroup:insert( mainMenuButton )
+
+
+
     elseif ( phase == "did" ) then
-        -- Called when the scene is now on screen.
-        -- Insert code here to make the scene come alive.
-        -- Example: start timers, begin animation, play audio, etc.
+
     end
 
-end -- function scene:show( event )
+end
 
 -----------------------------------------------------------------------------------------
 
@@ -149,7 +165,7 @@ function scene:hide( event )
         -- Called immediately after scene goes off screen.
     end
 
-end --function scene:hide( event )
+end
 
 -----------------------------------------------------------------------------------------
 
@@ -165,8 +181,7 @@ function scene:destroy( event )
     -- Called prior to the removal of scene's view ("sceneGroup").
     -- Insert code here to clean up the scene.
     -- Example: remove display objects, save state, etc.
-
-end --function scene:destroy( event )
+end
 
 -----------------------------------------------------------------------------------------
 -- EVENT LISTENERS
@@ -181,5 +196,3 @@ scene:addEventListener( "destroy", scene )
 -----------------------------------------------------------------------------------------
 
 return scene
-
-

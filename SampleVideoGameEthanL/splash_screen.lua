@@ -22,8 +22,6 @@ local scene = composer.newScene( sceneName )
 -----------------------------------------------------------------------------------------
  
 -- The local variables for this scene
-local scrollXSpeed = 0
-local scrollYSpeed = 1
 local jungleSounds = audio.loadSound("Sounds/The more you know.mp3")
 local jungleSoundsChannel
 
@@ -36,26 +34,9 @@ local textSoundChannel
 -- make images
 local companyImageBeforeGlow = display.newImage("Images/CompanyLogo2EthanL.png", 512, 384)
 local companyImageAfterGlow = display.newImage("Images/CompanyLogoEthanL.png", 512, 384)
-
-companyImageBeforeGlow:scale(0.5, 0.5)
-companyImageAfterGlow:scale(0.5, 0.5)
-
 --------------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 --------------------------------------------------------------------------------------------
-
--- The function that moves the beetleship across the screen
-local function moveCompanyLogo1()
-    companyImageBeforeGlow.x = companyImageBeforeGlow.x + scrollXSpeed
-    companyImageBeforeGlow.y = companyImageBeforeGlow.y + scrollYSpeed
-    companyImageBeforeGlow:scale(1.01^0.5, 1.01^0.5)
-end
-
-local function moveCompanyLogo2()
-    companyImageAfterGlow.x = companyImageAfterGlow.x + scrollXSpeed
-    companyImageAfterGlow.y = companyImageAfterGlow.y + scrollYSpeed
-    companyImageAfterGlow:scale(1.01^0.5, 1.01^0.5)
-end
 
 -- The function that will go to the main menu 
 local function gotoMainMenu()
@@ -72,8 +53,8 @@ display.setStatusBar(display.HiddenStatusBar)
 local companyText = display.newImage("Images/nightTimeText.png", 500, 500, 500)
 companyText.isVisible = false
 
-companyImageBeforeGlow:scale(0.3, 0.3)
-companyImageAfterGlow:scale(0.3, 0.3)
+companyImageBeforeGlow:scale(0.5, 0.5)
+companyImageAfterGlow:scale(0.5, 0.5)
 
 companyImageBeforeGlow.isVisible = true
 companyImageAfterGlow.isVisible = false
@@ -98,19 +79,7 @@ local function soundText()
     companyText.isVisible = true
     textSoundChannel = audio.play(textSound)
 end
-
-local function checkSize()
-
-    if (companyImageBeforeGlow.y == 384) then
-        companyImageBeforeGlow:scale(1, 1)
-end
-    if (companyImageAfterGlow.y == 384) then
-        companyImageAfterGlow:scale(1, 1)
-        
-end
-end
-
-Runtime:addEventListener("enterFrame", checkSize)        
+     
 timer.performWithDelay(2800, lampSound)
 Runtime:addEventListener("enterFrame", turnLampOn)
 timer.performWithDelay(4000, soundText)
@@ -171,10 +140,6 @@ function scene:show( event )
     elseif ( phase == "did" ) then
         -- start the splash screen music
         jungleSoundsChannel = audio.play(jungleSounds)
-
-        -- Call the moveBeetleship function as soon as we enter the frame.
-        Runtime:addEventListener("enterFrame", moveCompanyLogo1)
-        Runtime:addEventListener("enterFrame", moveCompanyLogo2)
 
         -- Go to the main menu screen after the given time.
         timer.performWithDelay ( 5000, gotoMainMenu)          
