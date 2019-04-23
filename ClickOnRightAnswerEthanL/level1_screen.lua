@@ -159,6 +159,15 @@ local function DisplayAnswers( )
 
 end
 
+
+
+local function repeatSound(event)
+    if (level1MusicStart.completed == true) then
+        level1MusicChannel = audio.play(level1Music)
+    end
+end
+
+
 -- Function that transitions to Lose Screen
 local function LoseScreenTransition( )        
     composer.gotoScene( "you_lose", {effect = "zoomInOutFade", time = 1000})
