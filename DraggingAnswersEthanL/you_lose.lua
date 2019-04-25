@@ -21,7 +21,7 @@ local widget = require( "widget" )
 -----------------------------------------------------------------------------------------
 
 -- Naming Scene
-sceneName = "you_win"
+sceneName = "you_lose"
 
 -- Creating Scene Object
 local scene = composer.newScene( sceneName ) -- This function doesn't accept a string, only a variable containing a string
@@ -42,19 +42,19 @@ function scene:create( event )
     -----------------------------------------------------------------------------------------
 
     -- Insert the background image and set it to the center of the screen
-    bkg_image = display.newImage("Images/Winscreen.png")
+    bkg_image = display.newImage("Images/Losescreen.png")
     bkg_image.x = display.contentCenterX
     bkg_image.y = display.contentCenterY
     bkg_image.width = display.contentWidth
     bkg_image.height = display.contentHeight
 
+    local loseSound = audio.loadSound("Sounds/youLoseSound.mp3")
+    local loseSoundChannel
+
+    loseSoundChannel = audio.play(loseSound)
+
     -- Associating display objects with this scene 
     sceneGroup:insert( bkg_image )
-
-    local winSound = audio.loadSound("Sounds/yabbadabbalaugh.wav")
-    local winSoundChannel
-
-    winSoundChannel = audio.play(winSound)
 end
 -----------------------------------------------------------------------------------------
 
