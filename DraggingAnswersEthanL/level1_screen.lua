@@ -78,7 +78,7 @@ local booSound = audio.loadSound("Sounds/boo.mp3")
 local booSoundChannel
 local winSound = audio.loadSound("Sounds/yabbadabbalaugh.wav")
 local winSoundChannel
-local loseSound = audio.loadSound("Sounds/youloseSound.mp3")
+local loseSound = audio.loadSound("Sounds/youLoseSound.mp3")
 local loseSoundChannel
 
 -- score
