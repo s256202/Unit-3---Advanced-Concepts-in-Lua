@@ -36,11 +36,17 @@ local bkg_image
 local playButton
 local creditsButton
 local instructionsButton
+local muteButtonUnpressed
+local muteButtonPressed
+
+-----------------------------------------------------------------------------------------
+-- SOUNDS
+-----------------------------------------------------------------------------------------
+
 
 local backgroundMusic = audio.loadSound("Sounds/CIRCUSII.wav")
 local backgroundMusicChannel
 
-local muteButton = display.newImage("Images/")
 -----------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 ----------------------------------------------------------------------------------------
@@ -64,6 +70,32 @@ local function InstructionsTransition( )
     composer.gotoScene( "instructions_screen", {effect = "slideRight", time = 1000})
 end
 
+local function MuteButtonUnpressedListener(touch)
+    if (touch.phase == "began") then
+        muteButtonUnpressed.isVisible = false
+        muteButtonPressed.isVisible = true
+        audio.stop()
+    end
+
+    if (touch.phase == "ended") then
+        muteButtonUnpressed.isVisible = true
+        muteButtonPressed.isVisible = false
+    end
+end
+
+local function MuteButtonPressedListener(touch)
+    if (touch.phase == "began") then
+        muteButtonUnpressed.isVisible = true
+        muteButtonPressed.isVisible = false
+        backgroundMusicChannel = audio.play(backgroundMusic)
+    end
+
+    if (touch.phase == "ended") then
+        muteButtonUnpressed.isVisible = false
+        muteButtonPressed.isVisible = true
+    end
+end
+
 -----------------------------------------------------------------------------------------
 -- GLOBAL SCENE FUNCTIONS
 -----------------------------------------------------------------------------------------
@@ -85,13 +117,6 @@ function scene:create( event )
     bkg_image.width = display.contentWidth
     bkg_image.height = display.contentHeight
 
-
-    -- Associating display objects with this scene 
-    sceneGroup:insert( bkg_image )
-
-    -- Send the background image to the back layer so all other objects can be on top
-    bkg_image:toBack()
-
     -----------------------------------------------------------------------------------------
     -- BUTTON WIDGETS
     -----------------------------------------------------------------------------------------   
@@ -104,8 +129,8 @@ function scene:create( event )
             y = display.contentHeight*7/8,
 
             -- Insert the images here
-            defaultFile = "Images/PlayButtonPressedCompany.png",
-            overFile = "Images/PlayButtonUnpressedCompany.png",
+            defaultFile = "Images/PlayButtonUnpressedCompany.png",
+            overFile = "Images/PlayButtonPressedCompany.png",
 
             -- When the button is released, call the Level1 screen transition function
             onRelease = Level1ScreenTransition          
@@ -122,8 +147,8 @@ function scene:create( event )
             y = display.contentHeight*7/8,
 
             -- Insert the images here
-            defaultFile = "Images/CreditsButtonPressedCompany.png",
-            overFile = "Images/Credits Button Unpressed.png",
+            defaultFile = "Images/CreditsButtonUnpressedCompany.png",
+            overFile = "Images/CreditsButtonPressedCompany.png",
 
             -- When the button is released, call the Credits transition function
             onRelease = CreditsTransition
@@ -141,21 +166,30 @@ function scene:create( event )
 
             -- Insert the images here
             defaultFile = "Images/InstructionsButtonPressedCompany.png",
-            overFile = "Images/Instructions Button Unpressed.png",
+            overFile = "Images/InstructionsButtonUnpressedCompany.png",
 
             -- When the button is released, call the instruction screen transition function
             onRelease = InstructionsTransition         
         } )
 
         instructionsButton:scale(0.5, 0.5)
-    -----------------------------------------------------------------------------------------
 
     -----------------------------------------------------------------------------------------
+    muteButtonPressed = display.newImage("Images/MuteButtonPressed.png", 900, 350)
+    muteButtonPressed:scale(0.5, 0.5)
+    
+
+    muteButtonUnpressed = display.newImage("Images/MuteButtonUnpressed.png", 900, 350)
+    muteButtonUnpressed:scale(0.5, 0.5)
+    muteButtonUnpressed.isVisible = false
 
     -- Associating button widgets with this scene
+    sceneGroup:insert( bkg_image )
     sceneGroup:insert( playButton )
     sceneGroup:insert( creditsButton )
     sceneGroup:insert( instructionsButton )
+    sceneGroup:insert( muteButtonUnpressed )
+    sceneGroup:insert( muteButtonPressed )
     
     -- INSERT INSTRUCTIONS BUTTON INTO SCENE GROUP
 
@@ -187,7 +221,9 @@ function scene:show( event )
     -- Example: start timers, begin animation, play audio, etc.
     elseif ( phase == "did" ) then       
         backgroundMusicSoundChannel = audio.play(backgroundMusic, {channel = 1, loops = 1})
-
+        -- Add the event listeners
+        muteButtonUnpressed:addEventListener("touch", MuteButtonUnpressedListener)
+        muteButtonPressed:addEventListener("touch", MuteButtonPressedListener)
     end
 
 end -- function scene:show( event )
@@ -216,6 +252,9 @@ function scene:hide( event )
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
         audio.stop(backgroundMusicChannel)
+        -- Add the event listeners
+        muteButtonUnpressed:removeEventListener("touch", MuteButtonUnpressedListener)
+        muteButtonPressed:removeEventListener("touch", MuteButtonPressedListener)
     end
 
 end -- function scene:hide( event )

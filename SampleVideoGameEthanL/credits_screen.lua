@@ -82,14 +82,15 @@ function scene:create( event )
         -- height = 106,
 
         -- Setting Visual Properties
-        defaultFile = "Images/Back Button Unpressed.png",
-        overFile = "Images/Back Button Pressed.png",
+        defaultFile = "Images/BackButtonUnpressedCompany.png",
+        overFile = "Images/BackButtonPressedCompany.png",
 
         -- Setting Functional Properties
         onRelease = BackTransition
 
     } )
 
+    backButton:scale(0.5, 0.5)
     -----------------------------------------------------------------------------------------
 
     -- Associating Buttons with this scene

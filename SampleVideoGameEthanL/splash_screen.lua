@@ -17,10 +17,13 @@ sceneName = "splash_screen"
 -- Create Scene Object
 local scene = composer.newScene( sceneName )
 
+-- hide status bar
+display.setStatusBar(display.HiddenStatusBar)
+
 ----------------------------------------------------------------------------------------
--- LOCAL VARIABLES
+-- SOUNDS
 -----------------------------------------------------------------------------------------
- 
+
 -- The local variables for this scene
 local jungleSounds = audio.loadSound("Sounds/The more you know.mp3")
 local jungleSoundsChannel
@@ -28,12 +31,19 @@ local jungleSoundsChannel
 -- make sound
 local lampPull = audio.loadSound("Sounds/lamppull.mp3")
 local lampPullSoundChannel
+
 local textSound = audio.loadSound("Sounds/sparkle.mp3")
 local textSoundChannel
 
+----------------------------------------------------------------------------------------
+-- LOCAL VARIABLES
+-----------------------------------------------------------------------------------------
+ 
 -- make images
-local companyImageBeforeGlow = display.newImage("Images/CompanyLogo2EthanL.png", 512, 384)
-local companyImageAfterGlow = display.newImage("Images/CompanyLogoEthanL.png", 512, 384)
+local companyImageBeforeGlow
+local companyImageAfterGlow
+local companyText
+
 --------------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 --------------------------------------------------------------------------------------------
@@ -42,23 +52,6 @@ local companyImageAfterGlow = display.newImage("Images/CompanyLogoEthanL.png", 5
 local function gotoMainMenu()
     composer.gotoScene( "main_menu" )
 end
-
------------------------------------------------------------------------------------------
-
------------------------------------------------------------------------------------------
--- hide status bar
-display.setStatusBar(display.HiddenStatusBar)
-
--- make text
-local companyText = display.newImage("Images/nightTimeText.png", 500, 500, 500)
-companyText.isVisible = false
-
-companyImageBeforeGlow:scale(0.5, 0.5)
-companyImageAfterGlow:scale(0.5, 0.5)
-
-companyImageBeforeGlow.isVisible = true
-companyImageAfterGlow.isVisible = false
-companyImageBeforeGlow.alpha = 0
 
 local function turnLampOn()
     companyImageBeforeGlow.alpha = companyImageBeforeGlow.alpha + 0.01
@@ -79,10 +72,7 @@ local function soundText()
     companyText.isVisible = true
     textSoundChannel = audio.play(textSound)
 end
-     
-timer.performWithDelay(2800, lampSound)
-Runtime:addEventListener("enterFrame", turnLampOn)
-timer.performWithDelay(4000, soundText)
+
 
 -- function to kill logo
 local function destroyLogo()
@@ -90,7 +80,7 @@ local function destroyLogo()
     companyImageAfterGlow.alpha = 0
     companyText.alpha = 0
 end
-timer.performWithDelay(5000, destroyLogo)
+
 -----------------------------------------------------------------------------------------
 -- GLOBAL SCENE FUNCTIONS
 -----------------------------------------------------------------------------------------
@@ -104,6 +94,9 @@ function scene:create( event )
     -- set the background to be black
     display.setDefault("background", 0, 0, 0)
 
+    companyImageBeforeGlow = display.newImage("Images/CompanyLogo2EthanL.png", 512, 384)
+    companyImageAfterGlow = display.newImage("Images/CompanyLogoEthanL.png", 512, 384)
+
     -- set the initial x and y position of the beetleship
     companyImageBeforeGlow.x = 512
     companyImageBeforeGlow.y = display.contentHeight/2
@@ -112,9 +105,21 @@ function scene:create( event )
     companyImageAfterGlow.x = 512
     companyImageAfterGlow.y = display.contentHeight/2
 
+    -- make text
+    companyText = display.newImage("Images/nightTimeText.png", 500, 500, 500)
+    companyText.isVisible = false
+
+    companyImageBeforeGlow:scale(0.5, 0.5)
+    companyImageAfterGlow:scale(0.5, 0.5)
+
+    companyImageBeforeGlow.isVisible = true
+    companyImageAfterGlow.isVisible = false
+    companyImageBeforeGlow.alpha = 0
+
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( companyImageBeforeGlow )
     sceneGroup:insert( companyImageAfterGlow )
+    sceneGroup:insert( companyText )
 
 end -- function scene:create( event )
 
@@ -140,9 +145,15 @@ function scene:show( event )
     elseif ( phase == "did" ) then
         -- start the splash screen music
         jungleSoundsChannel = audio.play(jungleSounds)
+        Runtime:addEventListener("enterFrame", turnLampOn)
+
+        timer.performWithDelay(2800, lampSound)
+        
+        timer.performWithDelay(4000, soundText)
 
         -- Go to the main menu screen after the given time.
-        timer.performWithDelay ( 5000, gotoMainMenu)          
+        timer.performWithDelay ( 5000, gotoMainMenu) 
+        timer.performWithDelay(5000, destroyLogo)         
         
     end
 
@@ -171,6 +182,7 @@ function scene:hide( event )
         
         -- stop the jungle sounds channel for this screen
         audio.stop(jungleSoundsChannel)
+        Runtime:removeEventListener("enterFrame", turnLampOn)
     end
 
 end --function scene:hide( event )
